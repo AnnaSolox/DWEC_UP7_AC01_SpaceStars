@@ -266,7 +266,7 @@ function temporizador(){
     tiempo.setMilliseconds(ms);
 
     //Muestro la nueva fecha
-    let texto = relllenaCeros(tiempo.getMinutes()) + ":" + rellenaCeros(tiempo.getSeconds());
+    let texto = rellenaCeros(tiempo.getMinutes()) + ":" + rellenaCeros(tiempo.getSeconds());
     const spanTiempo = document.getElementById("tiempo");
     spanTiempo.innerHTML = texto;
 
