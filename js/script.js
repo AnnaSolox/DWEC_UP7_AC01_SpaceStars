@@ -44,22 +44,22 @@ function canvasStars() {
 let fondoListo = false;
 let asteroidesListos = false;
 
-function cargarRestoElementos(){
-    if(fondoListo && asteroidesListos) {
+function cargarSiListo() {
+    if (fondoListo && asteroidesListos) {
         //Llamo a la función que pinta la nave
-    cargarNave();
+        cargarNave();
 
-    //Llamo a la función que pinta la base
-    cargarBase();  
+        //Llamo a la función que pinta la base
+        cargarBase();
 
-    //Llamo a la función que pinta las brújulas
-    cargarBrujulas();
+        //Llamo a la función que pinta las brújulas
+        cargarBrujulas();
 
-    //Añado el escuchador del teclado
-    window.addEventListener('keydown', moverNave, true);
+        //Añado el escuchador del teclado
+        window.addEventListener('keydown', moverNave, true);
 
-    //Lamada al temporizador
-    temporizador();
+        //Lamada al temporizador
+        temporizador();
     }
 }
 
@@ -73,7 +73,7 @@ function poblarEstrellas() {
             if (estrellasCargadas === 7) {
                 pintarFondo();
                 fondoListo = true;
-                cargarRestoElementos();
+                cargarSiListo();
             }
         }
         estrellasImg.push(estrella);
@@ -112,14 +112,22 @@ function pintarFondo() {
 }
 
 function cargarNave() {
-    naveImg.onload = () => {
+    if (naveImg.complete) {
         fondoNave = ctx.getImageData(naveX, naveY, naveTamanio, naveTamanio);
         ctx.drawImage(naveImg, naveX, naveY, naveTamanio, naveTamanio);
+    } else {
+        naveImg.onload = () => {
+            fondoNave = ctx.getImageData(naveX, naveY, naveTamanio, naveTamanio);
+            ctx.drawImage(naveImg, naveX, naveY, naveTamanio, naveTamanio);
+        }
     }
 }
 
 // Pinto la base
 function cargarBase() {
+    if (baseImg.complete) {
+        ctx.drawImage(baseImg, canvasSize - naveTamanio, canvasSize - naveTamanio, naveTamanio, naveTamanio)
+    }
     baseImg.onload = () => {
         ctx.drawImage(baseImg, canvasSize - naveTamanio, canvasSize - naveTamanio, naveTamanio, naveTamanio);
     }
@@ -135,7 +143,7 @@ function poblarAsteroides() {
             if (asteroidesCargados === 9) {
                 pintarAsteroides();
                 asteroidesListos = true;
-                cargarRestoElementos();
+                cargarSiListo();
             }
         };
 
@@ -174,7 +182,7 @@ function pintarAsteroides() {
         const asteroide = asteroidesImg[indiceAsteroide];
         ctx.drawImage(asteroide, x, y, tamanioAsteriode, tamanioAsteriode);
 
-        asteroidesPosicion.push({ x, y, tamanioAsteriode});
+        asteroidesPosicion.push({ x, y, tamanioAsteriode });
     }
 }
 
@@ -196,7 +204,7 @@ function cargarBrujulas() {
             valido = true;
 
             for (const pos of asteroidesPosicion) {
-                if (comprobarDistancia(x, y, pos.x, pos.y) < separacionMin) {
+                if (comprobarDistancia(x, y, brujulaTamanio, pos.x, pos.y, pos.tamanioAsteriode) < separacionMin) {
                     valido = false
                     break;
                 }
@@ -210,25 +218,25 @@ function cargarBrujulas() {
                     }
                 }
             }
-
-            const fondo = ctx.getImageData(x, y, brujulaTamanio, brujulaTamanio);
-            
-            if (brujulaImg.complete) {
-                ctx.drawImage(brujulaImg, x, y, brujulaTamanio, brujulaTamanio);
-            } else {
-                brujulaImg.onload = () => {
-                    ctx.drawImage(brujulaImg, x, y, brujulaTamanio, brujulaTamanio);
-                }
-            }
-
-            brujulasPosicion.push({x, y, fondo});
         }
+
+        const fondo = ctx.getImageData(x, y, brujulaTamanio, brujulaTamanio);
+
+        if (brujulaImg.complete) {
+            ctx.drawImage(brujulaImg, x, y, brujulaTamanio, brujulaTamanio);
+        } else {
+            brujulaImg.onload = () => {
+                ctx.drawImage(brujulaImg, x, y, brujulaTamanio, brujulaTamanio);
+            }
+        }
+
+        brujulasPosicion.push({ x, y, brujulaTamanio, fondo });
     }
 }
 
 function comprobarDistancia(x1, y1, t1, x2, y2, t2) {
-    const distX = (x1 + t1/2) - (x2 + t2/2);;
-    const distY = (y1 + t1/2) - (y2 + t2/2);
+    const distX = (x1 + t1 / 2) - (x2 + t2 / 2);;
+    const distY = (y1 + t1 / 2) - (y2 + t2 / 2);
     return Math.hypot(distX, distY);
 }
 
@@ -251,12 +259,14 @@ function moverNave(evento) {
             ctx.putImageData(fondoNave, naveX, naveY);
             //Actualizo la x
             naveX -= 30;
+            //Compruebo la colisión
+            detectarColision();
+
             //Capturo el fondo que voy a tapar
             fondoNave = ctx.getImageData(naveX, naveY, 30, 30);
             //Muevo la nave
             ctx.drawImage(naveImg, naveX, naveY, naveTamanio, naveTamanio);
-            //Compruebo la colisión
-            detectarColision();
+            
             break;
 
         //Derecha: 39 o 68 (flecha derecha o letra D)
@@ -272,12 +282,12 @@ function moverNave(evento) {
             ctx.putImageData(fondoNave, naveX, naveY);
             //Actualizo la x
             naveX += 30;
+            //Compruebo la colisión
+            detectarColision();
             //Capturo el fondo que voy a tapar
             fondoNave = ctx.getImageData(naveX, naveY, 30, 30);
             //Muevo la nave
             ctx.drawImage(naveImg, naveX, naveY, naveTamanio, naveTamanio);
-            //Compruebo la colisión
-            detectarColision();
             break;
 
         //Arriba: 38 o 87 (flecha arriba o letra W)
@@ -293,12 +303,12 @@ function moverNave(evento) {
             ctx.putImageData(fondoNave, naveX, naveY);
             //Actualizo la y
             naveY -= 30;
+            //Compruebo la colisión
+            detectarColision();
             //Capturo el fondo que voy a tapar
             fondoNave = ctx.getImageData(naveX, naveY, 30, 30);
             //Muevo la nave
             ctx.drawImage(naveImg, naveX, naveY, naveTamanio, naveTamanio);
-            //Compruebo la colisión
-            detectarColision();
             break;
 
         //Abajo: 40 o 83 (fle3cha abajo o letra S)
@@ -314,12 +324,12 @@ function moverNave(evento) {
             ctx.putImageData(fondoNave, naveX, naveY);
             //Actualizo la y
             naveY += 30;
+            //Compruebo la colisión
+            detectarColision();
             //Capturo el fondo que voy a tapar
             fondoNave = ctx.getImageData(naveX, naveY, 30, 30);
             //Muevo la nave
             ctx.drawImage(naveImg, naveX, naveY, naveTamanio, naveTamanio);
-            //Compruebo la colisión
-            detectarColision();
             break;
     }
 }
@@ -327,7 +337,7 @@ function moverNave(evento) {
 //Actualizo el contador y detecto si se ha quedado sin movimientos
 function restarContador() {
     //Decremento en cada movimiento
-    contador--; 
+    contador--;
 
     const spanPuntuacion = document.getElementById("puntuacion");
 
@@ -350,7 +360,7 @@ function restarContador() {
     }
 }
 
-function sumarContador(){
+function sumarContador() {
     const spanPuntuacion = document.getElementById("puntuacion");
 
     contador += 5;
@@ -397,17 +407,20 @@ function detectarColision() {
         }
 
         //Brujulas
-        for(let i = 0; i < brujulasPosicion.length; i++){
+        for (let i = 0; i < brujulasPosicion.length; i++) {
             const pos = brujulasPosicion[i];
-            if(
-                naveX < pos.x + naveTamanio &&      
-                naveX + naveTamanio > pos.x &&      
-                naveY < pos.y + naveTamanio &&     
-                naveY + naveTamanio > pos.y     
-            ){
+            if (
+                naveX < pos.x + naveTamanio &&
+                naveX + naveTamanio > pos.x &&
+                naveY < pos.y + naveTamanio &&
+                naveY + naveTamanio > pos.y
+            ) {
                 sumarContador();
+                // 2. Borrar la brújula (restaurar el fondo de 20x20 donde estaba la brújula)
                 ctx.putImageData(pos.fondo, pos.x, pos.y);
+
                 brujulasPosicion.splice(i, 1);
+
                 return;
             }
         }
