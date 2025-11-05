@@ -1,20 +1,28 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Space Stars</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Audiowide&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap" rel="stylesheet">
     <script type="text/javascript" src="js/script.js"></script>
 </head>
+
 <body onload="canvasStars()">
     <div>
         <h1>Space Stars</h1>
-        <span id="mensaje" onclick="reiniciar()">Intenta llegar a la base sin chocarte con los asteroides y sin agotar los puntos.</span><br>
-        Puntuación: <span id="puntuacion">40</span><br>
-        Tiempo: <span id="tiempo">15</span>
+        <span id="mensaje" onclick="reiniciar()">Intenta llegar a la base sin chocarte con los asteroides <br> y sin
+            agotar los puntos.</span><br>
+        <div class="parametrosJuego">
+            <p>Puntuación: <span id="puntuacion">40</span></p>
+            <p>Tiempo: <span id="tiempo">15</span></p>
+        </div>
     </div>
-    
+
     <canvas id="miCanvas" width="600" height="600"></canvas>
 </body>
+
 </html>

@@ -8,19 +8,34 @@ div {
 }
 
 h1 {
-    margin: 0;
+    margin: 10px;
+    font-family: "Audiowide", sans-serif;
+}
+
+body {
+    font-family: "Inconsolata", monospace;
+    font-size: 18px;
 }
 
 #mensaje {
-    font-size: 18px;
     font-weight: bold;
     cursor: pointer;
 }
 
 #puntuacion,
 #tiempo {
-    font-size: 18px;
     font-weight: bold;
-    font-family: Arial, Helvetica, sans-serif;
     color: #0F0;
+}
+
+.parametrosJuego {
+    margin-top: 20px;
+    padding: 5px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-top: 2px solid white;
+}
+
+.parametrosJuego p {
+    margin: 5px 0;
 }

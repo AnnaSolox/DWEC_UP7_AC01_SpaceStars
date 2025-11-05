@@ -1,6 +1,6 @@
 // Declaración de variables
 let canvas, ctx;
-const canvasSize = 600;
+let canvasSize;
 let naveX = 0; //Posición original en x de la nave
 let naveY = 0; //Posición original en y de la nave
 let nave = new Image(); //Imagen para capturar la nave
@@ -21,6 +21,7 @@ let estrellasCargadas = 0;
 function canvasStars(){
     //Obtengo el elemento canvas
     canvas = document.getElementById("miCanvas");
+    canvasSize = canvas.width;
 
     //Especifico el contexto 2D
     ctx = canvas.getContext("2d");
@@ -266,7 +267,7 @@ function actualizarContador(){
 
     // Compruebo si se ha quedado sin puntos
     if (contador === 0){
-        const mensaje = "¡Lo siento! Te has quedado sin puntos. Pincha Aquí para volver a intentarlo."
+        const mensaje = "¡Lo siento! Te has quedado sin puntos. \nPincha Aquí para volver a intentarlo."
         finalizar(mensaje);
     }
 }
@@ -287,7 +288,7 @@ function detectarColision(){
                 naveY < pos.y + naveTamanio &&      // el borde inferior de la nave pasa del borde superior del asteroide
                 naveY + naveTamanio > pos.y
             ){
-                const mensaje = "¡Lo siento! Has chocado con un asteoride. Pincha AQUÍ para volver a intentarlo.";
+                const mensaje = "¡Lo siento! Has chocado con un asteoride. \nPincha AQUÍ para volver a intentarlo.";
 
             finalizar(mensaje);
 
@@ -304,7 +305,7 @@ function detectarColision(){
             naveY < basePos + naveTamanio &&
             naveY + naveTamanio > basePos
         ){
-            const mensaje = "¡Enhorabuena! Has llegado a la base. Pincha AQUÍ para volver a jugar.";
+            const mensaje = "¡Enhorabuena! Has llegado a la base. \nPincha AQUÍ para volver a jugar.";
             finalizar(mensaje);
             break;
         } 
@@ -332,7 +333,7 @@ function temporizador(){
 
     //Compruebo si llega a 0 para finalizar el juego o continuar
     if(tiempo.getSeconds() <= 0){
-        const mensaje = "¡Lo siento! Se ha terminado el tiempo. Pincha AQUÍ para volver a intentarlo.";
+        const mensaje = "¡Lo siento! Se ha terminado el tiempo. \nPincha AQUÍ para volver a intentarlo.";
         finalizar(mensaje);
     } else {
         //Hago un loop para que se ejecute cada 500ms
@@ -354,7 +355,7 @@ function finalizar(mensaje){
     const spanMensaje = document.getElementById("mensaje");
 
     //Escribo el mensaje en ese elemento
-    spanMensaje.innerHTML = mensaje;
+    spanMensaje.innerText = mensaje;
 
     //Bloqueo el movimiento del teclado
     window.removeEventListener("keydown", moverNave, true);
