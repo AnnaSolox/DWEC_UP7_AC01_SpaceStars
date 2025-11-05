@@ -16,6 +16,8 @@ let asteroidesCargados = 0;
 let asteroidesPosicion = [];
 let estrellasImg = [];
 let estrellasCargadas = 0;
+let brujulasPosicion = [];
+const separacionMin = 70;
 
 // Inicio del juego
 function canvasStars() {
@@ -33,10 +35,13 @@ function canvasStars() {
     cargarNave();
 
     //Llamo a la función que pinta la base
-    pintarBase();
+    cargarBase();
 
     //Llamo a la función que pinta los asteroides
-    poblarArrayAsteroides();
+    poblarAsteroides();
+
+    //Llamo a la función que pinta las brújulas
+    cargarBrujulas();
 
     //Añado el escuchador del teclado
     window.addEventListener('keydown', moverNave, true);
@@ -69,7 +74,7 @@ function pintarFondo() {
     ctx.closePath();
     ctx.fill();
 
-    //Pinto 100 estrellas
+    //Distribuyo 100 estrellas
     for (i = 0; i < 100; i++) {
         const indiceEstrella = Math.floor(Math.random() * 7);
         const estrella = estrellasImg[indiceEstrella];
@@ -100,7 +105,7 @@ function cargarNave() {
 }
 
 // Pinto la base
-function pintarBase() {
+function cargarBase() {
     baseImg = new Image();
     baseImg.src = "../img/base.svg";
     baseImg.onload = () => {
@@ -108,7 +113,7 @@ function pintarBase() {
     }
 }
 
-function poblarArrayAsteroides() {
+function poblarAsteroides() {
     for (i = 1; i <= 9; i++) {
         const asteroide = new Image();
         asteroide.src = `../img/asteroide${i}.svg`;
@@ -126,9 +131,7 @@ function poblarArrayAsteroides() {
 
 // Pintar asteroides
 function pintarAsteroides() {
-    asteroidesPosicion = [];
     const numeroAsteroides = 25;
-    const separacionMin = 30;
 
     for (i = 0; i < numeroAsteroides; i++) {
         let x, y, tamanioAsteriode;
@@ -142,14 +145,11 @@ function pintarAsteroides() {
             //Evitar la nave (0,0) y la base (570, 570);
             if ((x < 60 && y < 60) || (x > 540 && y > 540)) continue;
 
-            
+
             valido = true;
             for (const pos of asteroidesPosicion) {
-                const distX = x - pos.x;
-                const distY = y - pos.y;
-                const distancia = Math.sqrt(distX * distX + distY * distY);
-                if (distancia < separacionMin) {
-                    valido = false;
+                if (comprobarDistancia(x, y, tamanioAsteriode, pos.x, pos.y, pos.tamanioAsteriode) < separacionMin) {
+                    valido = false
                     break;
                 }
             }
@@ -160,8 +160,66 @@ function pintarAsteroides() {
         const asteroide = asteroidesImg[indiceAsteroide];
         ctx.drawImage(asteroide, x, y, tamanioAsteriode, tamanioAsteriode);
 
-        asteroidesPosicion.push({ x, y });
+        asteroidesPosicion.push({ x, y, tamanioAsteriode});
     }
+}
+
+function cargarBrujulas() {
+    const brujulaTamanio = 20;
+
+
+    for (let i = 0; i < 3; i++) {
+        let x, y;
+        let valido = false;
+
+        while (!valido) {
+            x = Math.random() * (canvasSize - brujulaTamanio);
+            y = Math.random() * (canvasSize - brujulaTamanio);
+
+            x = Math.floor(x);
+            y = Math.floor(y);
+
+            //Evitar la nave (0,0) y la base (570, 570);
+            if ((x < 60 && y < 60) || (x > 540 && y > 540)) continue;
+
+            valido = true;
+
+            for (const pos of asteroidesPosicion) {
+                if (comprobarDistancia(x, y, pos.x, pos.y) < separacionMin) {
+                    valido = false
+                    break;
+                }
+            }
+
+            if (valido) {
+                for (const pos of brujulasPosicion) {
+                    if (comprobarDistancia(x, y, brujulaTamanio, pos.x, pos.y, pos.brujulaTamanio) < separacionMin) {
+                        valido = false
+                        break;
+                    }
+                }
+            }
+
+            const brujula = new Image();
+            const fondo = ctx.getImageData(x, y, brujulaTamanio, brujulaTamanio);
+            brujula.src = "../img/brujula.svg";
+            if (brujula.complete) {
+                ctx.drawImage(brujula, x, y, brujulaTamanio, brujulaTamanio);
+            } else {
+                brujula.onload = () => {
+                    ctx.drawImage(brujula, x, y, brujulaTamanio, brujulaTamanio);
+                }
+            }
+
+            brujulasPosicion.push({x, y, fondo});
+        }
+    }
+}
+
+function comprobarDistancia(x1, y1, t1, x2, y2, t2) {
+    const distX = (x1 + t1/2) - (x2 + t2/2);;
+    const distY = (y1 + t1/2) - (y2 + t2/2);
+    return Math.hypot(distX, distY);
 }
 
 // Muevo la nave
@@ -173,7 +231,7 @@ function moverNave(evento) {
         case 37:
         case 65:
             //Actualizar el contador
-            actualizarContador();
+            restarContador();
             //Compruebo si se va a salir por la izquierda
             if (naveX === 0) {
                 break;
@@ -195,7 +253,7 @@ function moverNave(evento) {
         case 39:
         case 68:
             //Actualizar el contador
-            actualizarContador();
+            restarContador();
             //Compruebo si se va a salir por la derecha
             if (naveX === 570) {
                 break;
@@ -216,7 +274,7 @@ function moverNave(evento) {
         case 38:
         case 87:
             //Actualizar el contador
-            actualizarContador();
+            restarContador();
             //Compruebo si se va a salir por arriba
             if (naveY === 0) {
                 break;
@@ -237,7 +295,7 @@ function moverNave(evento) {
         case 40:
         case 83:
             //Actualizar el contador
-            actualizarContador();
+            restarContador();
             //Compruebo si se va a salir por abajo
             if (naveY === 570) {
                 break;
@@ -257,11 +315,10 @@ function moverNave(evento) {
 }
 
 //Actualizo el contador y detecto si se ha quedado sin movimientos
-function actualizarContador() {
+function restarContador() {
     //Decremento en cada movimiento
-    contador--;
+    contador--; 
 
-    //Capturo el elemento en el que escribir la puntuación
     const spanPuntuacion = document.getElementById("puntuacion");
 
     //Actualizo el contador
@@ -281,6 +338,14 @@ function actualizarContador() {
         const mensaje = "¡Lo siento! Te has quedado sin puntos. \nPincha Aquí para volver a intentarlo."
         finalizar(mensaje);
     }
+}
+
+function sumarContador(){
+    const spanPuntuacion = document.getElementById("puntuacion");
+
+    contador += 5;
+    //Actualizo el contador
+    spanPuntuacion.innerHTML = contador;
 }
 
 // Detecto las colisiones con las base u otros asteroides
@@ -319,6 +384,21 @@ function detectarColision() {
             const mensaje = "¡Enhorabuena! Has llegado a la base. \nPincha AQUÍ para volver a jugar.";
             finalizar(mensaje);
             break;
+        }
+
+        //Brujulas
+        for(const pos of brujulasPosicion){
+            if(
+                naveX < pos.x + naveTamanio &&      
+                naveX + naveTamanio > pos.x &&      
+                naveY < pos.y + naveTamanio &&     
+                naveY + naveTamanio > pos.y     
+            ){
+                sumarContador();
+                ctx.putImageData(pos.fondo, pos.x, pos.y);
+                brujulasPosicion.splice(i, 1);
+                return;
+            }
         }
     }
 }
