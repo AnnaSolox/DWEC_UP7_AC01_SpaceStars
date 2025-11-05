@@ -28,11 +28,19 @@ body {
     color: #0F0;
 }
 
+#brujulas{
+    font-weight: bold;
+}
+
+#instruccion{
+    text-transform: uppercase;
+}
+
 .parametrosJuego {
     margin-top: 20px;
     padding: 5px 0;
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
     border-top: 2px solid white;
 }
 

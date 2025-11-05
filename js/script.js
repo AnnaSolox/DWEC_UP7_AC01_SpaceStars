@@ -1,32 +1,47 @@
 // Declaración de variables
+// ====== CONSTANTES DE CONFIGURACIÓN ======
+const NAVE_TAMANIO = 30;
+const SEPARACION_MIN = 70;
+const CANTIDAD_BRUJULAS = 3;
+const BONUS_TIEMPO = 3;
+const BONUS_MOVIMIENTO = 5;
+
+// ====== CANVAS Y CONTEXTO ======
 let canvas, ctx;
 let canvasSize;
-let naveX = 0; //Posición original en x de la nave
-let naveY = 0; //Posición original en y de la nave
-let nave = new Image(); //Imagen para capturar la nave
-let fondoNave = new Image(); //Imagen para capturar el fondo;
-let contador = 40; // Contador de movimientos
-let tiempo = new Date(15000); //Para tener solo 15 segundos en milisegundos
-let stop; //Para parar el temporizador
-const naveTamanio = 30;
+
+// ====== NAVE ======
+let naveX = 0; 
+let naveY = 0; 
 let naveImg;
+let fondoNave = new Image();
+const rastroNave = [];
+
+// ====== IMÁGENES Y RECURSOS ======
 let baseImg;
 let brujulaImg;
-let asteroidesImg = [];
+const asteroidesImg = [];
 let asteroidesCargados = 0;
-let asteroidesPosicion = [];
-let estrellasImg = [];
+const estrellasImg = [];
 let estrellasCargadas = 0;
-let brujulasPosicion = [];
-const separacionMin = 70;
 
-// Inicio del juego
+// ====== POSICIONES DE ELEMENTOS ======
+const brujulasPosicion = [];
+const asteroidesPosicion = [];
+
+// ====== PUNTUACIÓN Y TIEMPO ======
+let contadorBrujulas = 0;
+let contadorMovimientos = 40;
+let tiempo = new Date(15000);
+let stop;
+
+// ====== ESTADO DEL JUEGO ======
+let juegoIniciado = false;
+
 function canvasStars() {
-    //Obtengo el elemento canvas
     canvas = document.getElementById("miCanvas");
     canvasSize = canvas.width;
 
-    //Especifico el contexto 2D
     ctx = canvas.getContext("2d");
 
     brujulaImg = new Image();
@@ -36,7 +51,6 @@ function canvasStars() {
     naveImg = new Image();
     naveImg.src = "../img/nave.svg";
 
-    //Llamo a la función que pinta el fondo de las estrellas
     poblarEstrellas();
     poblarAsteroides();
 }
@@ -46,24 +60,14 @@ let asteroidesListos = false;
 
 function cargarSiListo() {
     if (fondoListo && asteroidesListos) {
-        //Llamo a la función que pinta la base
         cargarBase();
-
-        //Llamo a la función que pinta las brújulas
         cargarBrujulas();
-
-        //Llamo a la función que pinta la nave
         cargarNave();
 
-        //Añado el escuchador del teclado
         window.addEventListener('keydown', moverNave, true);
-
-        //Lamada al temporizador
-        temporizador();
     }
 }
 
-//Cargo las imagenes de las estrellas en el array
 function poblarEstrellas() {
     for (i = 1; i <= 7; i++) {
         const estrella = new Image();
@@ -80,30 +84,26 @@ function poblarEstrellas() {
     }
 }
 
-// Pinto el fondo con estrellas
 function pintarFondo() {
 
-    //Pinto el fondo de negro
     ctx.fillStyle = "black";
     ctx.beginPath();
-    ctx.rect(0, 0, canvasSize, canvasSize); // posición x, y, ancho y alto
+    ctx.rect(0, 0, canvasSize, canvasSize);
     ctx.closePath();
     ctx.fill();
 
-    //Distribuyo 100 estrellas
     for (i = 0; i < 100; i++) {
         const indiceEstrella = Math.floor(Math.random() * 7);
         const estrella = estrellasImg[indiceEstrella];
         const escalaEstrellas = 0.55;
         console.log(estrella);
-        //Posiciones x e y aleatorias
+
         const x = Math.random() * canvasSize;
         const y = Math.random() * canvasSize;
 
         //Pinto un punto blanco en esa posición
-        fondoNave = ctx.getImageData(naveX, naveY, naveTamanio, naveTamanio);
+        fondoNave = ctx.getImageData(naveX, naveY, NAVE_TAMANIO, NAVE_TAMANIO);
         ctx.drawImage(estrella, x, y, estrella.width * escalaEstrellas, estrella.height * escalaEstrellas)
-        //ctx.drawImage(estrella, x , y , Math.PI * 2); //posición x, y, radio (px), inicio del arco (en grados) fin del arco (en grados)
     }
 
     //Guardo el fondo de detrás de la nave como imagen
@@ -113,23 +113,22 @@ function pintarFondo() {
 
 function cargarNave() {
     if (naveImg.complete) {
-        fondoNave = ctx.getImageData(naveX, naveY, naveTamanio, naveTamanio);
-        ctx.drawImage(naveImg, naveX, naveY, naveTamanio, naveTamanio);
+        fondoNave = ctx.getImageData(naveX, naveY, NAVE_TAMANIO, NAVE_TAMANIO);
+        ctx.drawImage(naveImg, naveX, naveY, NAVE_TAMANIO, NAVE_TAMANIO);
     } else {
         naveImg.onload = () => {
-            fondoNave = ctx.getImageData(naveX, naveY, naveTamanio, naveTamanio);
-            ctx.drawImage(naveImg, naveX, naveY, naveTamanio, naveTamanio);
+            fondoNave = ctx.getImageData(naveX, naveY, NAVE_TAMANIO, NAVE_TAMANIO);
+            ctx.drawImage(naveImg, naveX, naveY, NAVE_TAMANIO, NAVE_TAMANIO);
         }
     }
 }
 
-// Pinto la base
 function cargarBase() {
     if (baseImg.complete) {
-        ctx.drawImage(baseImg, canvasSize - naveTamanio, canvasSize - naveTamanio, naveTamanio, naveTamanio)
+        ctx.drawImage(baseImg, canvasSize - NAVE_TAMANIO, canvasSize - NAVE_TAMANIO, NAVE_TAMANIO, NAVE_TAMANIO)
     }
     baseImg.onload = () => {
-        ctx.drawImage(baseImg, canvasSize - naveTamanio, canvasSize - naveTamanio, naveTamanio, naveTamanio);
+        ctx.drawImage(baseImg, canvasSize - NAVE_TAMANIO, canvasSize - NAVE_TAMANIO, NAVE_TAMANIO, NAVE_TAMANIO);
     }
 }
 
@@ -151,7 +150,6 @@ function poblarAsteroides() {
     }
 }
 
-// Pintar asteroides
 function pintarAsteroides() {
     const numeroAsteroides = 25;
 
@@ -170,7 +168,7 @@ function pintarAsteroides() {
 
             valido = true;
             for (const pos of asteroidesPosicion) {
-                if (comprobarDistancia(x, y, tamanioAsteriode, pos.x, pos.y, pos.tamanioAsteriode) < separacionMin) {
+                if (comprobarDistancia(x, y, tamanioAsteriode, pos.x, pos.y, pos.tamanioAsteriode) < SEPARACION_MIN) {
                     valido = false
                     break;
                 }
@@ -190,7 +188,7 @@ function cargarBrujulas() {
     const brujulaTamanio = 20;
 
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < CANTIDAD_BRUJULAS; i++) {
         let x, y;
         let valido = false;
 
@@ -204,7 +202,7 @@ function cargarBrujulas() {
             valido = true;
 
             for (const pos of asteroidesPosicion) {
-                if (comprobarDistancia(x, y, brujulaTamanio, pos.x, pos.y, pos.tamanioAsteriode) < separacionMin) {
+                if (comprobarDistancia(x, y, brujulaTamanio, pos.x, pos.y, pos.tamanioAsteriode) < SEPARACION_MIN) {
                     valido = false
                     break;
                 }
@@ -212,7 +210,7 @@ function cargarBrujulas() {
 
             if (valido) {
                 for (const pos of brujulasPosicion) {
-                    if (comprobarDistancia(x, y, brujulaTamanio, pos.x, pos.y, pos.brujulaTamanio) < separacionMin) {
+                    if (comprobarDistancia(x, y, brujulaTamanio, pos.x, pos.y, pos.brujulaTamanio) < SEPARACION_MIN) {
                         valido = false
                         break;
                     }
@@ -242,119 +240,125 @@ function comprobarDistancia(x1, y1, t1, x2, y2, t2) {
 
 // Muevo la nave
 function moverNave(evento) {
-    //Detecto la tecla que estoy pulsando
+    if(!juegoIniciado){
+        juegoIniciado = true;
+        temporizador();
+    }
     switch (evento.keyCode) {
-        //Izquierda: 37 o 65 (flecha izquierda o letra A)
-
         case 37:
         case 65:
-            //Actualizar el contador
             restarContador();
-            //Compruebo si se va a salir por la izquierda
-            if (naveX === 0) {
-                break;
-            }
-
-            //Borro la nave (pintando fondoNave encima)
-            ctx.putImageData(fondoNave, naveX, naveY);
-            //Actualizo la x
-            naveX -= 30;
-            //Compruebo la colisión
-            detectarColision();
-
-            //Capturo el fondo que voy a tapar
-            fondoNave = ctx.getImageData(naveX, naveY, 30, 30);
-            //Muevo la nave
-            ctx.drawImage(naveImg, naveX, naveY, naveTamanio, naveTamanio);
+            if (naveX === 0) break;
             
+            // Borrar la nave actual
+            ctx.putImageData(fondoNave, naveX, naveY);
+            
+            // Borrar todo el rastro anterior
+            borrarRastro();
+            
+            // Añadir posición actual al rastro
+            rastroNave.push({x: naveX, y: naveY, edad: 0, fondo: ctx.getImageData(naveX, naveY, NAVE_TAMANIO, NAVE_TAMANIO)});
+            
+            // Mover
+            naveX -= 30;
+            detectarColision();
+            
+            // Dibujar rastro actualizado
+            dibujarRastro();
+            
+            // Capturar fondo y dibujar nave
+            fondoNave = ctx.getImageData(naveX, naveY, 30, 30);
+            ctx.drawImage(naveImg, naveX, naveY, NAVE_TAMANIO, NAVE_TAMANIO);
             break;
 
-        //Derecha: 39 o 68 (flecha derecha o letra D)
         case 39:
         case 68:
-            //Actualizar el contador
             restarContador();
-            //Compruebo si se va a salir por la derecha
-            if (naveX === 570) {
-                break;
-            }
-            //Borro la nave (pintando fondoNave encima)
+            if (naveX === 570) break;
+            
             ctx.putImageData(fondoNave, naveX, naveY);
-            //Actualizo la x
+            borrarRastro();
+            rastroNave.push({x: naveX, y: naveY, edad: 0, fondo: ctx.getImageData(naveX, naveY, NAVE_TAMANIO, NAVE_TAMANIO)});
             naveX += 30;
-            //Compruebo la colisión
             detectarColision();
-            //Capturo el fondo que voy a tapar
+            dibujarRastro();
             fondoNave = ctx.getImageData(naveX, naveY, 30, 30);
-            //Muevo la nave
-            ctx.drawImage(naveImg, naveX, naveY, naveTamanio, naveTamanio);
+            ctx.drawImage(naveImg, naveX, naveY, NAVE_TAMANIO, NAVE_TAMANIO);
             break;
 
-        //Arriba: 38 o 87 (flecha arriba o letra W)
         case 38:
         case 87:
-            //Actualizar el contador
             restarContador();
-            //Compruebo si se va a salir por arriba
-            if (naveY === 0) {
-                break;
-            }
-            //Borro la nave (pintando fondoNave encima)
+            if (naveY === 0) break;
+            
             ctx.putImageData(fondoNave, naveX, naveY);
-            //Actualizo la y
+            borrarRastro();
+            rastroNave.push({x: naveX, y: naveY, edad: 0, fondo: ctx.getImageData(naveX, naveY, NAVE_TAMANIO, NAVE_TAMANIO)});
             naveY -= 30;
-            //Compruebo la colisión
             detectarColision();
-            //Capturo el fondo que voy a tapar
+            dibujarRastro();
             fondoNave = ctx.getImageData(naveX, naveY, 30, 30);
-            //Muevo la nave
-            ctx.drawImage(naveImg, naveX, naveY, naveTamanio, naveTamanio);
+            ctx.drawImage(naveImg, naveX, naveY, NAVE_TAMANIO, NAVE_TAMANIO);
             break;
 
-        //Abajo: 40 o 83 (fle3cha abajo o letra S)
         case 40:
         case 83:
-            //Actualizar el contador
             restarContador();
-            //Compruebo si se va a salir por abajo
-            if (naveY === 570) {
-                break;
-            }
-            //Borro la nave (pintando fondoNave encima)
+            if (naveY === 570) break;
+            
             ctx.putImageData(fondoNave, naveX, naveY);
-            //Actualizo la y
+            borrarRastro();
+            rastroNave.push({x: naveX, y: naveY, edad: 0, fondo: ctx.getImageData(naveX, naveY, NAVE_TAMANIO, NAVE_TAMANIO)});
             naveY += 30;
-            //Compruebo la colisión
             detectarColision();
-            //Capturo el fondo que voy a tapar
+            dibujarRastro();
             fondoNave = ctx.getImageData(naveX, naveY, 30, 30);
-            //Muevo la nave
-            ctx.drawImage(naveImg, naveX, naveY, naveTamanio, naveTamanio);
+            ctx.drawImage(naveImg, naveX, naveY, NAVE_TAMANIO, NAVE_TAMANIO);
             break;
     }
 }
 
-//Actualizo el contador y detecto si se ha quedado sin movimientos
+function borrarRastro() {
+    for (const punto of rastroNave) {
+        ctx.putImageData(punto.fondo, punto.x, punto.y);
+    }
+}
+
+function dibujarRastro() {
+    const maxEdad = 3;
+    
+    for (let i = rastroNave.length - 1; i >= 0; i--) {
+        const punto = rastroNave[i];
+        punto.edad++;
+        
+        if (punto.edad >= maxEdad) {
+            rastroNave.splice(i, 1);
+            continue;
+        }
+        
+        const alpha = 0.5 * (1 - punto.edad / maxEdad);
+        ctx.globalAlpha = alpha;
+        ctx.drawImage(naveImg, punto.x, punto.y, NAVE_TAMANIO, NAVE_TAMANIO);
+    }
+    
+    ctx.globalAlpha = 1.0;
+}
+
 function restarContador() {
-    //Decremento en cada movimiento
-    contador--;
+    contadorMovimientos--;
 
     const spanPuntuacion = document.getElementById("puntuacion");
+    spanPuntuacion.innerHTML = contadorMovimientos;
 
-    //Actualizo el contador
-    spanPuntuacion.innerHTML = contador;
-
-    //Compruebo el valor para cambiar el color del texto
-    if (contador < 6) {
+    if (contadorMovimientos < 6) {
         spanPuntuacion.style.color = "red";
-    } else if (contador < 11) {
+    } else if (contadorMovimientos < 11) {
         spanPuntuacion.style.color = "orange";
     } else {
         spanPuntuacion.style.color = "#0F0";
     }
 
-    // Compruebo si se ha quedado sin puntos
-    if (contador === 0) {
+    if (contadorMovimientos === 0) {
         const mensaje = "¡Lo siento! Te has quedado sin puntos. \nPincha Aquí para volver a intentarlo."
         finalizar(mensaje);
     }
@@ -362,10 +366,11 @@ function restarContador() {
 
 function sumarContador() {
     const spanPuntuacion = document.getElementById("puntuacion");
+    contadorMovimientos += BONUS_MOVIMIENTO;
+    spanPuntuacion.innerHTML = contadorMovimientos;
 
-    contador += 5;
-    //Actualizo el contador
-    spanPuntuacion.innerHTML = contador;
+    let segundosActuales = tiempo.getSeconds();
+    tiempo.setSeconds(segundosActuales + BONUS_TIEMPO);
 }
 
 // Detecto las colisiones con las base u otros asteroides
@@ -373,16 +378,15 @@ function detectarColision() {
     const pixels = 900; //Porque la imagen es de 30x30 pixels
     const elementos = pixels * 4; //porque cada pixel tiene 4 bytes (RGBA)
 
-    //Recorro en busca del rojo (asteroide) o del azul (base)
     for (let i = 0; i < elementos; i += 4) {
 
         //Asteroides
         for (const pos of asteroidesPosicion) {
             if (
-                naveX < pos.x + naveTamanio &&      // el borde derecho de la nave pasa del borde izquierdo del asteroide
-                naveX + naveTamanio > pos.x &&      // el borde izquierdo de la nave está antes del borde derecho del asteroide
-                naveY < pos.y + naveTamanio &&      // el borde inferior de la nave pasa del borde superior del asteroide
-                naveY + naveTamanio > pos.y         // el borde superior de la nave está antes del borde inferior del asperiode
+                naveX < pos.x + NAVE_TAMANIO &&      
+                naveX + NAVE_TAMANIO > pos.x &&      
+                naveY < pos.y + NAVE_TAMANIO &&      
+                naveY + NAVE_TAMANIO > pos.y         
             ) {
                 const mensaje = "¡Lo siento! Has chocado con un asteoride. \nPincha AQUÍ para volver a intentarlo.";
 
@@ -393,13 +397,13 @@ function detectarColision() {
         }
 
         //Base
-        const basePos = canvasSize - naveTamanio;
+        const basePos = canvasSize - NAVE_TAMANIO;
 
         if (
-            naveX < basePos + naveTamanio &&
-            naveX + naveTamanio > basePos &&
-            naveY < basePos + naveTamanio &&
-            naveY + naveTamanio > basePos
+            naveX < basePos + NAVE_TAMANIO &&
+            naveX + NAVE_TAMANIO > basePos &&
+            naveY < basePos + NAVE_TAMANIO &&
+            naveY + NAVE_TAMANIO > basePos
         ) {
             const mensaje = "¡Enhorabuena! Has llegado a la base. \nPincha AQUÍ para volver a jugar.";
             finalizar(mensaje);
@@ -410,13 +414,14 @@ function detectarColision() {
         for (let i = 0; i < brujulasPosicion.length; i++) {
             const pos = brujulasPosicion[i];
             if (
-                naveX < pos.x + naveTamanio &&
-                naveX + naveTamanio > pos.x &&
-                naveY < pos.y + naveTamanio &&
-                naveY + naveTamanio > pos.y
+                naveX < pos.x + NAVE_TAMANIO &&
+                naveX + NAVE_TAMANIO > pos.x &&
+                naveY < pos.y + NAVE_TAMANIO &&
+                naveY + NAVE_TAMANIO > pos.y
             ) {
+                contarBrujula();
                 sumarContador();
-                // 2. Borrar la brújula (restaurar el fondo de 20x20 donde estaba la brújula)
+
                 ctx.putImageData(pos.fondo, pos.x, pos.y);
 
                 brujulasPosicion.splice(i, 1);
@@ -427,17 +432,24 @@ function detectarColision() {
     }
 }
 
+function contarBrujula() {
+    const spanBrujulas = document.getElementById("brujulas");
+    contadorBrujulas++;
+    spanBrujulas.innerText = `${contadorBrujulas}/${CANTIDAD_BRUJULAS}`
+    if (contadorBrujulas === CANTIDAD_BRUJULAS) {
+        spanBrujulas.style.color = "#0F0";
+    }
+
+}
+
 function temporizador() {
-    //Decremento 500 milisegundos
     let ms = tiempo.getMilliseconds() - 500;
     tiempo.setMilliseconds(ms);
 
-    //Muestro la nueva fecha
     let texto = rellenaCeros(tiempo.getMinutes()) + ":" + rellenaCeros(tiempo.getSeconds());
     const spanTiempo = document.getElementById("tiempo");
     spanTiempo.innerHTML = texto;
 
-    //Comprueba el valor para cambiar el color del texto
     if (tiempo.getSeconds() < 6) {
         spanTiempo.style.color = "red";
     } else if (tiempo.getSeconds() < 11) {
@@ -446,12 +458,11 @@ function temporizador() {
         spanTiempo.style.color = "#0F0";
     }
 
-    //Compruebo si llega a 0 para finalizar el juego o continuar
     if (tiempo.getSeconds() <= 0) {
         const mensaje = "¡Lo siento! Se ha terminado el tiempo. \nPincha AQUÍ para volver a intentarlo.";
         finalizar(mensaje);
     } else {
-        //Hago un loop para que se ejecute cada 500ms
+        //Loop para que se ejecute cada 500ms
         stop = setTimeout(temporizador, 500);
     }
 }
@@ -464,20 +475,15 @@ function rellenaCeros(numero) {
     }
 }
 
-// Finalizo el juego
 function finalizar(mensaje) {
-    //Capturo el elemento en el que voy a escribir
+    
     const spanMensaje = document.getElementById("mensaje");
-
-    //Escribo el mensaje en ese elemento
     spanMensaje.innerText = mensaje;
 
-    //Bloqueo el movimiento del teclado
     window.removeEventListener("keydown", moverNave, true);
     clearTimeout(stop);
 }
 
-// Reinicio el juego
 function reiniciar() {
     window.location.reload();
 }
