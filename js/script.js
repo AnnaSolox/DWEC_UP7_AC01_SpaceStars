@@ -46,14 +46,14 @@ let asteroidesListos = false;
 
 function cargarSiListo() {
     if (fondoListo && asteroidesListos) {
-        //Llamo a la función que pinta la nave
-        cargarNave();
-
         //Llamo a la función que pinta la base
         cargarBase();
 
         //Llamo a la función que pinta las brújulas
         cargarBrujulas();
+
+        //Llamo a la función que pinta la nave
+        cargarNave();
 
         //Añado el escuchador del teclado
         window.addEventListener('keydown', moverNave, true);
