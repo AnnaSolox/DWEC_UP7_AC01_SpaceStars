@@ -150,13 +150,14 @@ Antes de dibujar las brújulas, se guarda el fondo con estrellas y se introduce 
 De este modo, cuando se realice una colisión entre la nave y una brújula, podremos repintar el fondo sin que se vean artefactos extraños.
 
 ### Efecto del rastro de la nave
-const alpha = 0.5 * (1 - punto.edad / maxEdad);
-ctx.globalAlpha = alpha;
-ctx.drawImage(naveImg, punto.x, punto.y, NAVE_TAMANIO, NAVE_TAMANIO);
 ```
 const alpha = 0.5 * (1 - punto.edad / maxEdad);
 ctx.globalAlpha = alpha;
 ctx.drawImage(naveImg, punto.x, punto.y, NAVE_TAMANIO, NAVE_TAMANIO);
 ctx.globalAlpha = 1.0;
 ```
+
+Cada vez que se mueve la nave, se guarda la posición anterior junto con la copia del fondo. El rastro se dibuja con la opacidad (`alpha`) que disminuye en cada fotograma, creando un efecto de desvanecimiento.
+
+Una vez el rastro alcanza cierta edad se elimina del array para liberar memoria.
 
