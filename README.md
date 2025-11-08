@@ -1,6 +1,6 @@
 # SPACE STARS - VERSIÓN PERSONALIZADA
 
-**Space stars** es un juego desarrollado en `HTML5`, `CSS`y `JavaScrip`. El objetivo es mover una nave desde el punto de salida hasta la base sin chocar con ningún asteroide antes de que se terminen  tanto el tiempo como los movimientos.
+**Space stars** es un juego desarrollado en `HTML5`, `CSS`y `JavaScript`. El objetivo es mover una nave desde el punto de salida hasta la base sin chocar con ningún asteroide antes de que se terminen  tanto el tiempo como los movimientos.
 
 Esta versión sigue la plantilla utilizada en el ejercicio propuesto y añade nuevas funcionalidades respecto a la jugabilidad y la estética del mismo. 
 
@@ -56,14 +56,14 @@ El flujo se establece del siguiente modo:
     3. cargarNave() (caputa `fondoNave`y dibuja la nave)
     4. Activa el `eventListener` del teclado.
 
-## Funciones clave (resumen)
+## Funciones clave
 
 - **Inicio y orquestación**
 
     1. `canvasStars()`
     Inicializa canvas, contexto, tamaños y arranca la carga de estrellas/asteroides.
 
-    2. cargarSiListo()
+    2. `cargarSiListo()`
     Comprueba `fondoListo` y `asteroidesListos` y, si se cumple, pinta base, brújulas y nave y activa teclado.
 
 - **Fondo y asteroides**
