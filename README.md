@@ -1,4 +1,4 @@
-# SPACE STARS - VERSIÓN PERSONALIZADA
+# SPACE STARS
 
 **Space stars** es un juego desarrollado en `HTML5`, `CSS`y `JavaScript` en el que el jugador debe guiar una nave hasta la base evitando asteroides antes de agotar el tiempo y los movimientos disponibles.
 
