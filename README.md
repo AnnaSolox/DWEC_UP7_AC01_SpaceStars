@@ -13,6 +13,7 @@ Incluye mejoras tanto visuales como de jugabilidad respecto a versiones básicas
     - + 3 segundos 
 
 ## Estructura del proyecto
+```
 /
 ├── index.html
 ├── css/
@@ -25,3 +26,4 @@ Incluye mejoras tanto visuales como de jugabilidad respecto a versiones básicas
     ├── estrella.svg
     ├── brujula.svg
     └── base.svg
+```
