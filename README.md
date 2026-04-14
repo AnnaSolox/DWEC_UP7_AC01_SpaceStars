@@ -1,6 +1,6 @@
 # SPACE STARS
 
-**Space stars** es un juego desarrollado en `HTML5`, `CSS`y `JavaScript` en el que el jugador debe guiar una nave hasta la base evitando asteroides antes de agotar el tiempo y los movimientos disponibles.
+**Space stars** es un juego desarrollado en `HTML5`, `CSS` y `JavaScript` en el que el jugador debe guiar una nave hasta la base evitando asteroides antes de agotar el tiempo y los movimientos disponibles.
 
 Incluye assets y recompensas personalizadas con respecto a la versión básica del juego.
 
@@ -8,9 +8,9 @@ Incluye assets y recompensas personalizadas con respecto a la versión básica d
 - Mueve la nave en una cuadrícula hasta alcanzar la base.
 - Evita colisionar con los asteroides.
 - Gestiona un número limitado de movimientos y tiempo.
-- Recoge brújulas para obtener ventanas:
-    - + 5 movimientos
-    - + 3 segundos 
+- Recoge brújulas para obtener ventajas:
+    - +5 movimientos
+    - +3 segundos 
 
 ## Estructura del proyecto
 ```
@@ -27,3 +27,15 @@ Incluye assets y recompensas personalizadas con respecto a la versión básica d
 └── js/
     └── script.js
 ```
+
+## Cómo jugar
+
+### Enlace
+https://spacestars-game.netlify.app/
+
+### Gameplay
+- Utiliza las flechas del teclado para mover la nave.
+- Esquiva los asteroides.
+- Coge las brújulas para ganar recompensas.
+- Llega a la base.
+- Una vez ganes o pierdas, haz clic en el texto que hay debajo del título para reiniciar.
